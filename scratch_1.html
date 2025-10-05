@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>Марио Telegram Game</title>
+    <style>
+        body {
+          margin: 0;
+          background: skyblue;
+          overflow: hidden;
+        }
+        #game {
+          position: relative;
+          width: 800px;
+          height: 400px;
+          background: linear-gradient(to top, green 50px, skyblue 50px);
+          margin: 0 auto;
+          overflow: hidden;
+          border: 3px solid #000;
+        }
+        #mario {
+          position: absolute;
+          bottom: 50px;
+          left: 50px;
+          width: 50px;
+          height: 50px;
+          background: red;
+          border-radius: 10px;
+        }
+        #obstacle {
+          position: absolute;
+          bottom: 50px;
+          right: -50px;
+          width: 50px;
+          height: 50px;
+          background: brown;
+        }
+    </style>
+</head>
+<body>
+<div id="game">
+    <div id="mario"></div>
+    <div id="obstacle"></div>
+</div>
+
+<script>
+    const mario = document.getElementById("mario");
+    const obstacle = document.getElementById("obstacle");
+    let jumping = false;
+
+    document.body.addEventListener("keydown", (e) => {
+      if (e.code === "Space" && !jumping) jump();
+    });
+
+    function jump() {
+      jumping = true;
+      let up = setInterval(() => {
+        let bottom = parseInt(window.getComputedStyle(mario).bottom);
+        if (bottom >= 200) {
+          clearInterval(up);
+          let down = setInterval(() => {
+            if (bottom <= 50) {
+              clearInterval(down);
+              jumping = false;
+            }
+            bottom -= 5;
+            mario.style.bottom = bottom + "px";
+          }, 20);
+        }
+        bottom += 5;
+        mario.style.bottom = bottom + "px";
+      }, 20);
+    }
+
+    function moveObstacle() {
+      let right = parseInt(window.getComputedStyle(obstacle).right);
+      right += 5;
+      if (right > 850) right = -50;
+      obstacle.style.right = right + "px";
+
+      // проверка столкновения
+      const marioRect = mario.getBoundingClientRect();
+      const obsRect = obstacle.getBoundingClientRect();
+      if (
+        marioRect.left < obsRect.right &&
+        marioRect.right > obsRect.left &&
+        marioRect.bottom > obsRect.top
+      ) {
+        alert("Игра окончена! 💀");
+        window.location.reload();
+      }
+      requestAnimationFrame(moveObstacle);
+    }
+
+    moveObstacle();
+</script>
+</body>
+</html>
